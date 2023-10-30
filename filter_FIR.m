@@ -1,4 +1,4 @@
-function Hd = filter_FRI
+function Hd = filter_FIR
 %FILTER_FRI Returns a discrete-time filter object.
 
 % MATLAB Code
