@@ -72,7 +72,7 @@ ylabel('Amplitude');
 title('Absolute of Filter');
 grid on;
 %%%
-% Here we hear the sound of shifted signal
+% Here we hear the sound of modulated signal
 sound(y2, fs);
 pause(length(y2) / fs);
 
