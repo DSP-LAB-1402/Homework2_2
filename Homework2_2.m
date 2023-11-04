@@ -156,7 +156,9 @@ sound(x4, fs);
 pause(length(x4) / fs);
 
 %% Homework_2
-
+% * Here in this task we want to use spectogtram and see chirp
+%
+% * Now we declare variables and signals
 f0 = 100;
 fs = 500;
 t = 0:1 / fs:2;
@@ -164,12 +166,17 @@ x_1 = sin(2 * pi * f0 * t);
 x_2 = chirp(t, 400, 1, 200);
 x_3 = 50 * [zeros(1, 249) 1 zeros(1, 751)];
 x3 = x_1 + x_2 + x_3;
+%%%
+% Now we plot fft of signal
 figure('Name', 'FFT');
 plot(abs(fftshift(fft(x3))));
 xlabel('freq(Hz)');
 ylabel('amp');
 title('fft');
-
+%%%
+% We use spectogram function to show STFT
+%
+% Now we see  what spectrogram of 2 Hamming windows look like
 w1 = hamming(256);
 figure('Name', 'Hamming');
 spectrogram(x3, w1, 64, 128, 1000, 'yaxis');
