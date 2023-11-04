@@ -167,22 +167,77 @@ x_2 = chirp(t, 400, 1, 200);
 x_3 = 50 * [zeros(1, 249) 1 zeros(1, 751)];
 x3 = x_1 + x_2 + x_3;
 %%%
-% Now we plot fft of signal
-figure('Name', 'FFT');
-plot(abs(fftshift(fft(x3))));
-xlabel('freq(Hz)');
-ylabel('amp');
+% Now we plot time domain and frequency domain of each signal
+figure('Name', 'Signal x_1');
+subplot(2, 1, 1);
+plot(t, abs(fftshift(fft(x_1))));
+xlabel('Samples');
+ylabel('Amplitude');
 title('fft');
+grid on;
+
+subplot(2, 1, 2);
+plot(t, x_1);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('time domain');
+
+figure('Name', 'Signal x_2');
+subplot(2, 1, 1);
+plot(t, abs(fftshift(fft(x_2))));
+xlabel('Samples');
+ylabel('Amplitude');
+title('fft');
+grid on;
+
+subplot(2, 1, 2);
+plot(t, x_2);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('time domain');
+
+figure('Name', 'Signal x_3');
+subplot(2, 1, 1);
+plot(t, abs(fftshift(fft(x_3))));
+xlabel('Samples');
+ylabel('Amplitude');
+title('fft');
+grid on;
+
+subplot(2, 1, 2);
+plot(t, x_3);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('time domain');
+
+figure('Name', 'Signal x3');
+subplot(2, 1, 1);
+plot(t, abs(fftshift(fft(x3))));
+xlabel('Samples');
+ylabel('Amplitude');
+title('fft');
+grid on;
+
+subplot(2, 1, 2);
+plot(t, x3);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('time domain');
 %%%
 % We use spectogram function to show STFT
 %
 % Now we see  what spectrogram of 2 Hamming windows look like
+
 w1 = hamming(256);
 figure('Name', 'Hamming');
-spectrogram(x3, w1, 64, 128, 1000, 'yaxis');
+spectrogram(x3, w1, 127, 128, fs, 'centered', 'yaxis');
 title('Spectogram 256');
 
 w2 = hamming(512);
 figure('Name', 'Hamming');
-spectrogram(x3, w2, 64, 128, 1000, 'yaxis');
+spectrogram(x3, w2, 127, 128, fs, 'centered', 'yaxis');
 title('Spectogram 512');
