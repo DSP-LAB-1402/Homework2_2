@@ -52,7 +52,7 @@ figure('Name', 'Signal');
 plot(t_axis, y1);
 xlabel('Samples');
 ylabel('Amplitude');
-title('Shifted Signal');
+title('modulated Signal');
 grid on;
 
 y2 = FD_FIR.filter(y1);
@@ -160,73 +160,104 @@ pause(length(x4) / fs);
 %
 % * Now we declare variables and signals
 f0 = 100;
-fs = 500;
-t = 0:1 / fs:2;
+%fs = 500;
+%t = 0:1 / fs:2;
+t = linspace(0, 2, 2 ^ 12);
+Ts = t(2) - t(1);
+fs = 1 / Ts;
 x_1 = sin(2 * pi * f0 * t);
-x_2 = chirp(t, 400, 1, 200);
-x_3 = 50 * [zeros(1, 249) 1 zeros(1, 751)];
+x_2 = chirp(t, 200, 2, 400);
+x_3 = 50 * [zeros(1, 249) 1 zeros(1, 3846)];
 x3 = x_1 + x_2 + x_3;
 %%%
 % Now we plot time domain and frequency domain of each signal
 figure('Name', 'Signal x_1');
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 plot(t, abs(fftshift(fft(x_1))));
 xlabel('Samples');
 ylabel('Amplitude');
 title('fft');
 grid on;
 
-subplot(2, 1, 2);
+subplot(3, 1, 2);
 plot(t, x_1);
 xlabel('Samples');
 ylabel('Amplitude');
 grid on;
 title('time domain');
 
+subplot(3, 1, 3);
+plot(t, unwrap(angle(fftshift(fft(x_1)))));
+xlabel('Samples');
+ylabel('Radian');
+grid on;
+title('phase');
+
 figure('Name', 'Signal x_2');
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 plot(t, abs(fftshift(fft(x_2))));
 xlabel('Samples');
 ylabel('Amplitude');
 title('fft');
 grid on;
 
-subplot(2, 1, 2);
+subplot(3, 1, 2);
 plot(t, x_2);
 xlabel('Samples');
 ylabel('Amplitude');
 grid on;
 title('time domain');
 
+subplot(3, 1, 3);
+plot(t, unwrap(angle(fftshift(fft(x_2)))));
+xlabel('Samples');
+ylabel('Radian');
+grid on;
+title('phase');
+
 figure('Name', 'Signal x_3');
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 plot(t, abs(fftshift(fft(x_3))));
 xlabel('Samples');
 ylabel('Amplitude');
 title('fft');
 grid on;
 
-subplot(2, 1, 2);
+subplot(3, 1, 2);
 plot(t, x_3);
 xlabel('Samples');
 ylabel('Amplitude');
 grid on;
 title('time domain');
 
+subplot(3, 1, 3);
+plot(t, unwrap(angle(fftshift(fft(x_3)))));
+xlabel('Samples');
+ylabel('Radian');
+grid on;
+title('phase');
+
 figure('Name', 'Signal x3');
-subplot(2, 1, 1);
+subplot(3, 1, 1);
 plot(t, abs(fftshift(fft(x3))));
 xlabel('Samples');
 ylabel('Amplitude');
 title('fft');
 grid on;
 
-subplot(2, 1, 2);
+subplot(3, 1, 2);
 plot(t, x3);
 xlabel('Samples');
 ylabel('Amplitude');
 grid on;
 title('time domain');
+
+subplot(3, 1, 3);
+plot(t, unwrap(angle(fftshift(fft(x3)))));
+xlabel('Samples');
+ylabel('Radian');
+grid on;
+title('phase');
 %%%
 % We use spectogram function to show STFT
 %
@@ -234,10 +265,10 @@ title('time domain');
 
 w1 = hamming(256);
 figure('Name', 'Hamming');
-spectrogram(x3, w1, 127, 128, fs, 'centered', 'yaxis');
+spectrogram(x3, w1, 255, 256, fs, 'centered', 'yaxis');
 title('Spectogram 256');
 
 w2 = hamming(512);
 figure('Name', 'Hamming');
-spectrogram(x3, w2, 127, 128, fs, 'centered', 'yaxis');
+spectrogram(x3, w2, 511, 512, fs, 'centered', 'yaxis');
 title('Spectogram 512');
