@@ -359,7 +359,7 @@ title('phase');
 %%%
 % We use spectogram function to show STFT
 %
-% Now we see  what spectrogram of 2 Hamming windows look like
+% Now we see  what spectrogram of 4 Hamming windows look like
 
 w1 = hamming(64);
 figure('Name', 'Hamming');
@@ -380,6 +380,9 @@ w4 = hamming(512);
 figure('Name', 'Hamming');
 spectrogram(x3, w4, 511, 512, fs, 'centered', 'yaxis');
 title('Spectogram 512');
+%%%
+% Here we extract the info of signals with stft function
+% and then plot 3-D with surf function
 
 [s, t, f] = stft(x3, fs, 'window', w2, 'OverLapLength', 127, 'FFTLength', 128);
 
