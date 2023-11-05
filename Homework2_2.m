@@ -46,6 +46,8 @@ xlabel('Samples');
 ylabel('Amplitude');
 title('Filtered Signal');
 grid on;
+%%%
+% Now we modulate the signal and  plot it
 
 y1 = y .* s;
 
@@ -56,23 +58,36 @@ ylabel('Amplitude');
 title('modulated Signal');
 grid on;
 
+%%%
+% Here we import filter and change a little in F_axis for showing
+% filter better
+
 y2 = FD_FIR.filter(y1);
+
 imp_filter = load('filter.mat').Num;
 reso_freq = 10000;
 f_axis = linspace(-fs / 2, fs / 2, reso_freq);
 f_axis_pos = f_axis(floor(reso_freq / 2) + 1:end);
 FT_lowpass_filter = fftshift(fft(imp_filter, reso_freq));
 FT_lowpass_filter = FT_lowpass_filter(floor(reso_freq / 2) + 1:end);
+
+x2 = y2 .* s;
+x4 = filter(imp_filter, 1, x2);
+
 %%%
 % y is filtered signal of input
 %
 % y1 is product of filtered signal and carrier
 %
 % y2 is filtered signal of y1
+%
+% x4 is reconstructed signal
 %%%
 % Here we hear the sound of modulated signal
 sound(y2, fs);
 pause(length(y2) / fs);
+%%%
+% Now we plot signals without noise
 
 figure('Name', 'Signals');
 subplot(4, 2, 1)
@@ -130,6 +145,15 @@ xlabel('Samples');
 ylabel('Amplitude');
 grid on;
 title('fft');
+
+%%%
+% Here We hear the sound of reconstructed signal
+sound(x4, fs);
+pause(length(x4) / fs);
+
+%%%
+% Now we add a gaussian noise to our signal and
+%then plot it
 
 Noisy_signal = x_t + 0.03 * randn(1, length(y));
 y_noisy = FD_FIR.filter(Noisy_signal);
@@ -210,13 +234,13 @@ ylabel('Amplitude');
 grid on;
 title('phase');
 
-x2 = y2 .* s;
-x4 = filter(imp_filter, 1, x2);
 %%%
-% Here We hear the sound of reconstructed signal
-sound(x4, fs);
-pause(length(x4) / fs);
-
+% Here We hear the sound of reconstructed noisy signal
+sound(Noisy_rec, fs);
+pause(length(Noisy_rec) / fs);
+%%%
+% Here we calculate mean square errer and mean absolute
+%error for each noisy and without noise signal
 MSE = sum((x4 - x_t) .^ 2) / length(x_t);
 MAE = sum(abs(x4 - x_t)) / length(x_t);
 
@@ -357,8 +381,7 @@ figure('Name', 'Hamming');
 spectrogram(x3, w4, 511, 512, fs, 'centered', 'yaxis');
 title('Spectogram 512');
 
-
-[s, t, f] = stft(x3, fs, 'window', w2, 'OverLapLength',127, 'FFTLength', 128);
+[s, t, f] = stft(x3, fs, 'window', w2, 'OverLapLength', 127, 'FFTLength', 128);
 
 figure('Name', 'Short-time Fourier Transform');
 surf(f, t, abs(s), 'EdgeColor', 'none');
