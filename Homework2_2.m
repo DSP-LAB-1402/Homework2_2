@@ -15,7 +15,8 @@ clc;
 x_t = x_t';
 t_axis = linspace(0, length(x_t) / fs, length(x_t));
 f0 = 10000;
-% plot
+%%%
+% Now we plot  the audio
 figure('Name', 'Audio');
 plot(t_axis, x_t);
 xlabel('Samples');
@@ -59,18 +60,15 @@ y2 = FD_FIR.filter(y1);
 imp_filter = load('filter.mat').Num;
 reso_freq = 10000;
 f_axis = linspace(-fs / 2, fs / 2, reso_freq);
+f_axis_pos = f_axis(floor(reso_freq / 2) + 1:end);
+FT_lowpass_filter = fftshift(fft(imp_filter, reso_freq));
+FT_lowpass_filter = FT_lowpass_filter(floor(reso_freq / 2) + 1:end);
 %%%
 % y is filtered signal of input
 %
 % y1 is product of filtered signal and carrier
 %
 % y2 is filtered signal of y1
-figure('Name', 'Filter');
-plot(f_axis, fftshift(abs(fft(imp_filter, reso_freq))) / fs);
-xlabel('Samples');
-ylabel('Amplitude');
-title('Absolute of Filter');
-grid on;
 %%%
 % Here we hear the sound of modulated signal
 sound(y2, fs);
@@ -133,17 +131,81 @@ ylabel('Amplitude');
 grid on;
 title('fft');
 
+Noisy_signal = x_t + 0.03 * randn(1, length(y));
+y_noisy = FD_FIR.filter(Noisy_signal);
+y1_noisy = y_noisy .* s;
+y2_noisy = FD_FIR.filter(y1_noisy);
+y2_mo = y2_noisy .* s;
+Noisy_rec = filter(imp_filter, 1, y2_mo);
+
+figure('Name', 'Noisy Signals');
+subplot(4, 2, 1)
+plot(t_axis, Noisy_signal);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Input Signal');
+grid on;
+
+subplot(4, 2, 2)
+plot(fftshift(abs(fft(Noisy_signal))) / fs);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('fft');
+
+subplot(4, 2, 3)
+plot(t_axis, y_noisy);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Filtered signal');
+grid on;
+
+subplot(4, 2, 4)
+plot(fftshift(abs(fft(y_noisy))) / fs);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('fft');
+
+subplot(4, 2, 5)
+plot(t_axis, y1_noisy);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Product of carrier');
+grid on;
+
+subplot(4, 2, 6)
+plot(fftshift(abs(fft(y1_noisy))) / fs);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('fft');
+
+subplot(4, 2, 7)
+plot(t_axis, y2_noisy);
+xlabel('Samples');
+ylabel('Amplitude');
+title('Filtered signal');
+grid on;
+
+subplot(4, 2, 8)
+plot(fftshift(abs(fft(y2_noisy))) / fs);
+xlabel('Samples');
+ylabel('Amplitude');
+grid on;
+title('fft');
+
 figure('Name', 'Signals');
 subplot(2, 1, 1);
-plot(f_axis, 20 * log10(abs(fftshift(fft(imp_filter, reso_freq)))));
-xlabel('Samples');
+plot(f_axis_pos, 20 * log10(abs(FT_lowpass_filter)));
+xlabel('frequency');
 ylabel('Amplitude');
 title('fft');
 grid on;
 
 subplot(2, 1, 2);
-plot(f_axis, unwrap(angle(fftshift(fft(imp_filter, reso_freq)))));
-xlabel('Samples');
+plot(f_axis_pos, unwrap(angle(FT_lowpass_filter)));
+xlabel('frequency');
 ylabel('Amplitude');
 grid on;
 title('phase');
@@ -155,19 +217,31 @@ x4 = filter(imp_filter, 1, x2);
 sound(x4, fs);
 pause(length(x4) / fs);
 
+MSE = sum((x4 - x_t) .^ 2) / length(x_t);
+MAE = sum(abs(x4 - x_t)) / length(x_t);
+
+fprintf('MSE between original signal and descrambled signal: %d', MSE);
+
+fprintf('MAE between original signal and descrambled signal: %d', MAE);
+
+MSE_n = sum((Noisy_rec - x_t) .^ 2) / length(x_t);
+MAE_n = sum(abs(Noisy_rec - x_t)) / length(x_t);
+
+fprintf('MSE between original signal and descrambled noisy signal: %d', MSE);
+
+fprintf('MAE between original signal and descrambled noisy signal: %d', MAE);
+
 %% Homework_2
 % * Here in this task we want to use spectogtram and see chirp
 %
 % * Now we declare variables and signals
 f0 = 100;
-%fs = 500;
-%t = 0:1 / fs:2;
-t = linspace(0, 2, 2 ^ 12);
+t = linspace(0, 2, 2 ^ 11);
 Ts = t(2) - t(1);
 fs = 1 / Ts;
 x_1 = sin(2 * pi * f0 * t);
 x_2 = chirp(t, 200, 2, 400);
-x_3 = 50 * [zeros(1, 249) 1 zeros(1, 3846)];
+x_3 = 50 * [zeros(1, 1023) 1 zeros(1, 1024)];
 x3 = x_1 + x_2 + x_3;
 %%%
 % Now we plot time domain and frequency domain of each signal
@@ -263,12 +337,36 @@ title('phase');
 %
 % Now we see  what spectrogram of 2 Hamming windows look like
 
-w1 = hamming(256);
+w1 = hamming(64);
 figure('Name', 'Hamming');
-spectrogram(x3, w1, 255, 256, fs, 'centered', 'yaxis');
+spectrogram(x3, w1, 63, 64, fs, 'centered', 'yaxis');
+title('Spectogram 64');
+
+w2 = hamming(128);
+figure('Name', 'Hamming');
+spectrogram(x3, w2, 127, 128, fs, 'centered', 'yaxis');
+title('Spectogram 128');
+
+w3 = hamming(256);
+figure('Name', 'Hamming');
+spectrogram(x3, w3, 255, 256, fs, 'centered', 'yaxis');
 title('Spectogram 256');
 
-w2 = hamming(512);
+w4 = hamming(512);
 figure('Name', 'Hamming');
-spectrogram(x3, w2, 511, 512, fs, 'centered', 'yaxis');
+spectrogram(x3, w4, 511, 512, fs, 'centered', 'yaxis');
 title('Spectogram 512');
+
+
+[s, t, f] = stft(x3, fs, 'window', w2, 'OverLapLength',127, 'FFTLength', 128);
+
+figure('Name', 'Short-time Fourier Transform');
+surf(f, t, abs(s), 'EdgeColor', 'none');
+axis tight;
+colormap(jet);
+cb = colorbar;
+view([-1, -0.5, 1]);
+ylabel(cb, 'Magnitude(Volts/Hz)');
+xlabel('Time (Seconds)');
+ylabel('Frequency (Hz)');
+title('STFT of a Chirp Signal with Hamming 128');
