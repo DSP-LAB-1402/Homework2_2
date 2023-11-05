@@ -75,13 +75,13 @@ x2 = y2 .* s;
 x4 = filter(imp_filter, 1, x2);
 
 %%%
-% y is filtered signal of input
+% * y is filtered signal of input
 %
-% y1 is product of filtered signal and carrier
+% * y1 is product of filtered signal and carrier
 %
-% y2 is filtered signal of y1
+% * y2 is filtered signal of y1
 %
-% x4 is reconstructed signal
+% * x4 is reconstructed signal
 %%%
 % Here we hear the sound of modulated signal
 sound(y2, fs);
@@ -153,7 +153,7 @@ pause(length(x4) / fs);
 
 %%%
 % Now we add a gaussian noise to our signal and
-%then plot it
+% then plot it
 
 Noisy_signal = x_t + 0.03 * randn(1, length(y));
 y_noisy = FD_FIR.filter(Noisy_signal);
@@ -240,7 +240,7 @@ sound(Noisy_rec, fs);
 pause(length(Noisy_rec) / fs);
 %%%
 % Here we calculate mean square errer and mean absolute
-%error for each noisy and without noise signal
+% error for each noisy and without noise signal
 MSE = sum((x4 - x_t) .^ 2) / length(x_t);
 MAE = sum(abs(x4 - x_t)) / length(x_t);
 
